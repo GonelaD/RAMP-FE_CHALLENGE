@@ -24,9 +24,10 @@ export function App() {
     transactionsByEmployeeUtils.invalidateData()
 
     await employeeUtils.fetchAll()
+    setIsLoading(false)
     await paginatedTransactionsUtils.fetchAll()
 
-    setIsLoading(false)
+    
   }, [employeeUtils, paginatedTransactionsUtils, transactionsByEmployeeUtils])
 
   const loadTransactionsByEmployee = useCallback(
@@ -64,8 +65,14 @@ export function App() {
             if (newValue === null) {
               return
             }
+            if(newValue.firstName == "All"){
+              await loadAllTransactions();
+            }
+            else{
+              await loadTransactionsByEmployee(newValue.id)
+            }
 
-            await loadTransactionsByEmployee(newValue.id)
+            
           }}
         />
 
@@ -74,7 +81,7 @@ export function App() {
         <div className="RampGrid">
           <Transactions transactions={transactions} />
 
-          {transactions !== null && (
+          {transactions !== null && paginatedTransactions?.nextPage!==null && transactionsByEmployee==null && (
             <button
               className="RampButton"
               disabled={paginatedTransactionsUtils.loading}
